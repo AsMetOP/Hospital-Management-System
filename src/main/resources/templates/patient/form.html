@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!--
+    PATIENT FORM (ADD + EDIT — reused for both)
+    File: src/main/resources/templates/patient/form.html
+
+    KEY THYMELEAF FORM BINDINGS:
+      th:object="${patient}"     → binds the entire form to the Patient model object
+      th:field="*{firstName}"   → binds this input to patient.firstName
+                                   (sets name, id, and value automatically)
+      th:errors="*{firstName}"  → shows validation error for firstName field
+      th:action="@{/patients}"  → sets form action URL
+
+    HOW FORM BINDING WORKS:
+      1. Controller adds empty Patient to model:  model.addAttribute("patient", new Patient())
+      2. Thymeleaf binds: th:object="${patient}"
+      3. th:field="*{firstName}" generates: name="firstName" id="firstName" value="${patient.firstName}"
+      4. User fills form, submits POST
+      5. Spring MVC auto-binds POST body to @ModelAttribute Patient parameter in controller
+      6. @Valid triggers validation → if fails, BindingResult has errors → redisplay form
+-->
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main-content})}">
+<head>
+    <title th:text="${pageTitle + ' | MediCare HMS'}">Patient Form | MediCare HMS</title>
+</head>
+<body>
+<th:block th:fragment="main-content">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/patients}">Patients</a></li>
+            <li class="breadcrumb-item active" th:text="${pageTitle}">Add Patient</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card border-0 shadow-sm">
+
+                <!-- Card Header -->
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-person-plus text-primary me-2"
+                           th:classappend="${patient.id != null} ? 'bi-person-check'"></i>
+                        <span th:text="${pageTitle}">Add Patient</span>
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <!--
+                        THYMELEAF FORM
+                        th:action: if patient.id is null → POST /patients (create new)
+                                   if patient.id exists  → POST /patients/{id} (update)
+                        th:object: binds form to the Patient object from Model
+                        method="post": HTML forms only support GET/POST
+                    -->
+                    <form th:action="${patient.id != null} ? @{/patients/{id}(id=${patient.id})} : @{/patients}"
+                          th:object="${patient}"
+                          method="post"
+                          novalidate>
+
+                        <!-- SECTION: Personal Information -->
+                        <h6 class="text-muted fw-semibold mb-3 text-uppercase small letter-spacing">
+                            <i class="bi bi-person me-1"></i>Personal Information
+                        </h6>
+
+                        <div class="row g-3 mb-4">
+                            <!-- First Name -->
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label fw-medium">
+                                    First Name <span class="text-danger">*</span>
+                                </label>
+                                <!--
+                                    th:field="*{firstName}":
+                                    Generates: name="firstName" id="firstName" value="(current value)"
+                                    is-invalid class shows red border when there's a validation error
+                                -->
+                                <input type="text"
+                                       th:field="*{firstName}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'"
+                                       placeholder="Enter first name">
+                                <!--
+                                    th:errors="*{firstName}": renders the validation error message
+                                    Only shows if @NotBlank or @Size validation failed
+                                -->
+                                <div class="invalid-feedback" th:errors="*{firstName}">First name error</div>
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label fw-medium">
+                                    Last Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       th:field="*{lastName}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'"
+                                       placeholder="Enter last name">
+                                <div class="invalid-feedback" th:errors="*{lastName}">Last name error</div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-medium">
+                                    Email Address <span class="text-danger">*</span>
+                                </label>
+                                <input type="email"
+                                       th:field="*{email}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                       placeholder="patient@example.com">
+                                <div class="invalid-feedback" th:errors="*{email}">Email error</div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label fw-medium">
+                                    Phone Number <span class="text-danger">*</span>
+                                </label>
+                                <input type="tel"
+                                       th:field="*{phone}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'"
+                                       placeholder="10-digit mobile number">
+                                <div class="invalid-feedback" th:errors="*{phone}">Phone error</div>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="col-md-4">
+                                <label for="dateOfBirth" class="form-label fw-medium">Date of Birth</label>
+                                <input type="date"
+                                       th:field="*{dateOfBirth}"
+                                       class="form-control">
+                            </div>
+
+                            <!-- Gender (Bootstrap Select) -->
+                            <div class="col-md-4">
+                                <label for="gender" class="form-label fw-medium">Gender</label>
+                                <select th:field="*{gender}" class="form-select">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Blood Group -->
+                            <div class="col-md-4">
+                                <label for="bloodGroup" class="form-label fw-medium">Blood Group</label>
+                                <select th:field="*{bloodGroup}" class="form-select">
+                                    <option value="">-- Select --</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: Address -->
+                        <h6 class="text-muted fw-semibold mb-3 text-uppercase small">
+                            <i class="bi bi-geo-alt me-1"></i>Address
+                        </h6>
+
+                        <div class="mb-4">
+                            <textarea th:field="*{address}"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Full address (optional)"></textarea>
+                        </div>
+
+                        <!-- Form Buttons -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a th:href="@{/patients}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>
+                                <span th:text="${patient.id != null} ? 'Update Patient' : 'Save Patient'">Save</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

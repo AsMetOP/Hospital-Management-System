@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main-content})}">
+<head><title>Appointments | MediCare HMS</title></head>
+<body>
+<th:block th:fragment="main-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0"><i class="bi bi-calendar-check text-primary me-2"></i>Appointments</h4>
+        <a th:href="@{/appointments/new}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Book Appointment
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">#</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="apt, stat : ${appointments}">
+                            <td class="ps-3 text-muted small" th:text="${stat.count}">1</td>
+                            <td class="fw-medium" th:text="${apt.patient.fullName}">Patient</td>
+                            <td>
+                                <div th:text="${apt.doctor.fullName}">Doctor</div>
+                                <div class="text-muted small" th:text="${apt.doctor.specialization}">Specialty</div>
+                            </td>
+                            <td th:text="${#temporals.format(apt.appointmentDate, 'dd MMM yyyy')}">Date</td>
+                            <td>
+                                <span class="badge rounded-pill"
+                                      th:classappend="${apt.status.name() == 'SCHEDULED'} ? 'bg-warning text-dark' :
+                                                      (${apt.status.name() == 'COMPLETED'} ? 'bg-success' : 'bg-danger')"
+                                      th:text="${apt.status}">STATUS</span>
+                            </td>
+                            <td class="text-muted small" th:text="${apt.notes ?: '-'}">Notes</td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-1 flex-wrap">
+                                    <!-- Mark Complete -->
+                                    <form th:if="${apt.status.name() == 'SCHEDULED'}"
+                                          th:action="@{/appointments/{id}/status(id=${apt.id})}" method="post" class="d-inline">
+                                        <input type="hidden" name="status" value="COMPLETED">
+                                        <button class="btn btn-sm btn-outline-success" title="Mark Complete">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                    </form>
+                                    <!-- Cancel -->
+                                    <form th:if="${apt.status.name() == 'SCHEDULED'}"
+                                          th:action="@{/appointments/{id}/cancel(id=${apt.id})}" method="post" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger" title="Cancel">
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(appointments)}">
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>No appointments found.
+                                <div class="mt-3">
+                                    <a th:href="@{/appointments/new}" class="btn btn-primary btn-sm">Book First Appointment</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

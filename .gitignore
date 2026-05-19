@@ -1,0 +1,33 @@
+# ══════════════════════════════════════════════════
+# .gitignore for Spring Boot / Maven Java project
+# JD REQUIREMENT: "Ensure application of code repository maintenance tool GIT"
+# ══════════════════════════════════════════════════
+
+# ── Maven build output ──────────────────────────
+target/
+*.class
+
+# ── IDE files — never commit these ──────────────
+.idea/
+*.iml
+.eclipse
+.project
+.classpath
+.settings/
+*.iws
+
+# ── Logs — generated at runtime, not source code ─
+logs/
+*.log
+
+# ── Spring Boot packaged jar ─────────────────────
+*.jar
+*.war
+
+# ── OS files ─────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Sensitive config (never commit passwords!) ───
+# If using application-prod.properties with real passwords, add:
+# src/main/resources/application-prod.properties

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main-content})}">
+<head><title>Book Appointment | MediCare HMS</title></head>
+<body>
+<th:block th:fragment="main-content">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/appointments}">Appointments</a></li>
+            <li class="breadcrumb-item active">Book Appointment</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-7 col-lg-9">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-calendar-plus text-primary me-2"></i>Book New Appointment
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/appointments}" th:object="${appointment}" method="post" novalidate>
+
+                        <div class="row g-3">
+                            <!-- Patient Select -->
+                            <div class="col-12">
+                                <label class="form-label fw-medium">Patient <span class="text-danger">*</span></label>
+                                <!--
+                                    DROPDOWN from database:
+                                    th:each loops through all patients from the Model.
+                                    th:value = patient.id (what gets sent to the controller)
+                                    th:text  = patient.fullName (what the user sees)
+                                    th:selected checks if this option matches the currently bound value.
+                                -->
+                                <select name="patient.id" class="form-select form-select-lg">
+                                    <option value="">-- Select Patient --</option>
+                                    <option th:each="p : ${patients}"
+                                            th:value="${p.id}"
+                                            th:text="${p.fullName}">Patient Name</option>
+                                </select>
+                            </div>
+
+                            <!-- Doctor Select -->
+                            <div class="col-12">
+                                <label class="form-label fw-medium">Doctor <span class="text-danger">*</span></label>
+                                <select name="doctor.id" class="form-select form-select-lg">
+                                    <option value="">-- Select Available Doctor --</option>
+                                    <option th:each="d : ${doctors}"
+                                            th:value="${d.id}"
+                                            th:text="${d.fullName} + ' — ' + ${d.specialization}">Doctor Name</option>
+                                </select>
+                            </div>
+
+                            <!-- Appointment Date -->
+                            <div class="col-12">
+                                <label class="form-label fw-medium">Appointment Date <span class="text-danger">*</span></label>
+                                <input type="date" th:field="*{appointmentDate}"
+                                       class="form-control form-control-lg"
+                                       th:classappend="${#fields.hasErrors('appointmentDate')} ? 'is-invalid'"
+                                       th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                <div class="invalid-feedback" th:errors="*{appointmentDate}">Date error</div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-12">
+                                <label class="form-label fw-medium">Notes / Reason for Visit</label>
+                                <textarea th:field="*{notes}" class="form-control" rows="3"
+                                          placeholder="Optional: describe symptoms or reason for visit"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a th:href="@{/appointments}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-calendar-check me-1"></i>Book Appointment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

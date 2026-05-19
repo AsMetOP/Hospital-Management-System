@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        PARENT: Spring Boot BOM (Bill of Materials)
+        This manages all dependency versions for you automatically.
+        You don't have to specify versions for Spring libraries below.
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <!-- Project Identity -->
+    <groupId>com.hospital</groupId>
+    <artifactId>hospital-management</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>Hospital Management System</name>
+    <description>A full-stack Hospital Management System built with Spring MVC, MySQL, Bootstrap</description>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            SPRING BOOT WEB (Spring MVC)
+            Gives us: @Controller, @RequestMapping, Tomcat server embedded
+            JD requirement: "Use MVC components for coding the presentation layer"
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            THYMELEAF
+            Server-side HTML templating engine — replaces JSP in modern Spring MVC apps.
+            JD requirement: "Develop responsive user interfaces using HTML5, CSS3, JavaScript"
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!--
+            SPRING DATA JPA
+            Abstracts JDBC into repositories. Under the hood, it still uses JDBC.
+            JD requirement: "Use JDBC to access DB and perform basic operation"
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            SPRING VALIDATION
+            Enables @Valid, @NotBlank, @Size on model fields for form validation.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!--
+            MYSQL CONNECTOR
+            JDBC driver that lets Java talk to MySQL.
+            JD requirement: "create tables ... in MySQL database"
+        -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            LOMBOK
+            Eliminates boilerplate: @Getter, @Setter, @Builder, @Slf4j
+            @Slf4j auto-generates: private static final Logger log = LoggerFactory.getLogger(...)
+            JD requirement: "implement Logging ... in web application"
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            SPRING BOOT TEST
+            Bundles: JUnit 5, Mockito, AssertJ, MockMvc, Spring Test
+            JD requirement: "Write unit test cases ... using JUnit and Mockito"
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            H2 IN-MEMORY DATABASE (test scope only)
+            Used during unit tests — no MySQL needed for tests.
+            Tests run against H2, production runs against MySQL.
+        -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Spring Boot Maven Plugin: packages app as executable JAR -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!--
+                JACOCO MAVEN PLUGIN
+                Generates code coverage reports after tests run.
+                JD requirement: "implement ... Code coverage in web application"
+                Run: mvn test  → then open target/site/jacoco/index.html
+            -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

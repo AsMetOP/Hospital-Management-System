@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!--
+    DASHBOARD PAGE
+    File: src/main/resources/templates/dashboard.html
+
+    THYMELEAF SYNTAX USED HERE:
+      th:text="${variable}"      → inserts text (escapes HTML for safety)
+      th:each="item : ${list}"   → loops over a list (like Java for-each)
+      th:if="${condition}"        → conditional rendering
+      th:href="@{/path}"         → generates URL (handles context path automatically)
+      th:classappend="${cond}?'class'" → conditionally adds CSS class
+-->
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main-content})}">
+<head>
+    <title>Dashboard | MediCare HMS</title>
+</head>
+<body>
+<th:block th:fragment="main-content">
+
+    <!-- ── PAGE HEADER ───────────────────────────────── -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1">
+                <i class="bi bi-speedometer2 text-primary me-2"></i>Dashboard
+            </h4>
+            <p class="text-muted mb-0 small">Welcome to MediCare Hospital Management System</p>
+        </div>
+        <div class="text-muted small">
+            <i class="bi bi-calendar3 me-1"></i>
+            <span id="currentDate"></span>
+        </div>
+    </div>
+
+    <!-- ── STATS CARDS (Bootstrap Grid + Cards) ──────── -->
+    <!--
+        Bootstrap Grid: row + col-* = responsive grid layout
+        col-xl-3 col-md-6 = 4 columns on large screens, 2 on medium
+        JD REQUIREMENT: "basic Bootstrap components" — this is the card component
+    -->
+    <div class="row g-3 mb-4">
+
+        <!-- Total Patients Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                        <i class="bi bi-people-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fs-2 fw-bold" th:text="${totalPatients}">0</div>
+                        <div class="text-muted small">Total Patients</div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a th:href="@{/patients}" class="text-primary small text-decoration-none">
+                        View all <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Doctors Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-success bg-opacity-10 text-success rounded-3 p-3">
+                        <i class="bi bi-person-badge-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fs-2 fw-bold" th:text="${totalDoctors}">0</div>
+                        <div class="text-muted small">
+                            Total Doctors
+                            <span class="badge bg-success ms-1"
+                                  th:text="${availableDoctors} + ' available'">0 available</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a th:href="@{/doctors}" class="text-success small text-decoration-none">
+                        View all <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scheduled Appointments Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded-3 p-3">
+                        <i class="bi bi-calendar-check-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fs-2 fw-bold" th:text="${scheduledCount}">0</div>
+                        <div class="text-muted small">Scheduled</div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a th:href="@{/appointments}" class="text-warning small text-decoration-none">
+                        View all <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Appointments Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-info bg-opacity-10 text-info rounded-3 p-3">
+                        <i class="bi bi-check-circle-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fs-2 fw-bold" th:text="${completedCount}">0</div>
+                        <div class="text-muted small">Completed</div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <span class="text-info small">All time</span>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /stats row -->
+
+    <!-- ── TODAY'S APPOINTMENTS TABLE ────────────────── -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <h6 class="fw-semibold mb-0">
+                        <i class="bi bi-calendar-day text-primary me-2"></i>Today's Appointments
+                    </h6>
+                    <a th:href="@{/appointments/new}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Book New
+                    </a>
+                </div>
+
+                <!-- Bootstrap Table Component -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">#</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Specialization</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--
+                                    th:each = Thymeleaf for-each loop
+                                    iterStat tracks loop index, count, even/odd
+                                -->
+                                <tr th:each="apt, iterStat : ${todaysAppointments}">
+                                    <td class="ps-3 text-muted small" th:text="${iterStat.count}">1</td>
+                                    <td>
+                                        <div class="fw-medium" th:text="${apt.patient.fullName}">Patient Name</div>
+                                    </td>
+                                    <td>
+                                        <div th:text="${apt.doctor.fullName}">Doctor Name</div>
+                                    </td>
+                                    <td class="text-muted small" th:text="${apt.doctor.specialization}">Cardiology</td>
+                                    <td>
+                                        <!--
+                                            Bootstrap Badge Component
+                                            th:classappend conditionally adds color class based on status enum
+                                        -->
+                                        <span class="badge rounded-pill"
+                                              th:classappend="${apt.status.name() == 'SCHEDULED'} ? 'bg-warning text-dark' :
+                                                              (${apt.status.name() == 'COMPLETED'} ? 'bg-success' : 'bg-danger')"
+                                              th:text="${apt.status}">SCHEDULED</span>
+                                    </td>
+                                </tr>
+
+                                <!-- Empty state — shown when list is empty -->
+                                <tr th:if="${#lists.isEmpty(todaysAppointments)}">
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                                        No appointments scheduled for today.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>
+<script>
+    // Set today's date in the header
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+</script>

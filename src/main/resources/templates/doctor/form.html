@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::main-content})}">
+<head><title th:text="${pageTitle + ' | MediCare HMS'}">Doctor Form</title></head>
+<body>
+<th:block th:fragment="main-content">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/doctors}">Doctors</a></li>
+            <li class="breadcrumb-item active" th:text="${pageTitle}">Add Doctor</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-person-badge text-success me-2"></i>
+                        <span th:text="${pageTitle}">Add Doctor</span>
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="${doctor.id != null} ? @{/doctors/{id}(id=${doctor.id})} : @{/doctors}"
+                          th:object="${doctor}" method="post" novalidate>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">First Name <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{firstName}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid'"
+                                       placeholder="First name">
+                                <div class="invalid-feedback" th:errors="*{firstName}">Error</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{lastName}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid'"
+                                       placeholder="Last name">
+                                <div class="invalid-feedback" th:errors="*{lastName}">Error</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Email <span class="text-danger">*</span></label>
+                                <input type="email" th:field="*{email}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                       placeholder="doctor@hospital.com">
+                                <div class="invalid-feedback" th:errors="*{email}">Error</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Phone</label>
+                                <input type="tel" th:field="*{phone}" class="form-control" placeholder="Phone number">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Specialization <span class="text-danger">*</span></label>
+                                <select th:field="*{specialization}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('specialization')} ? 'is-invalid'">
+                                    <option value="">-- Select Specialization --</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="ENT">ENT</option>
+                                    <option value="Ophthalmology">Ophthalmology</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                    <option value="General Medicine">General Medicine</option>
+                                </select>
+                                <div class="invalid-feedback" th:errors="*{specialization}">Error</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Qualification</label>
+                                <input type="text" th:field="*{qualification}" class="form-control"
+                                       placeholder="e.g. MBBS, MD, DM">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium">Years of Experience</label>
+                                <input type="number" th:field="*{experience}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('experience')} ? 'is-invalid'"
+                                       min="0" max="50" placeholder="0">
+                                <div class="invalid-feedback" th:errors="*{experience}">Error</div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-check form-switch mt-3">
+                                    <input class="form-check-input" type="checkbox"
+                                           th:field="*{available}" id="available">
+                                    <label class="form-check-label fw-medium" for="available">
+                                        Available for appointments
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a th:href="@{/doctors}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-1"></i>
+                                <span th:text="${doctor.id != null} ? 'Update Doctor' : 'Save Doctor'">Save</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>
